@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Arrays.stream;
+import static org.apache.commons.lang3.ClassUtils.isPrimitiveOrWrapper;
 
 public class Mapper<S, D> {
     private final Class<S> sourceClass;
@@ -19,23 +19,41 @@ public class Mapper<S, D> {
     public D map(S source) {
         try {
             D destination = destinationClass.newInstance();
-
-            stream(sourceClass.getDeclaredFields())
-                .map(c -> extractNameAndValue(c, source))
-                .map(this::applyConfiguration)
-                .forEach(nv -> {
-                    try {
-                        Field destinationField = destinationClass.getDeclaredField(nv.getName());
-                        destinationField.setAccessible(true);
-                        destinationField.set(destination, nv.getValue());
-                    } catch (Exception e) {
-                        throw new RuntimeException(e);
-                    }
-                });
-
+            recurrent(source, destination);
             return destination;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void recurrent(Object source, Object destination) {
+        Field[] sourceFields = source.getClass().getDeclaredFields();
+        Class<?> destinationClass = destination.getClass();
+        for (int i = 0; i < sourceFields.length; i++) {
+            Field field = sourceFields[i];
+            field.setAccessible(true);
+            String fieldName = field.getName();
+            try {
+                if (configuration.containsKey(fieldName)) {
+                    fieldName = configuration.get(fieldName);
+                }
+
+                Field destinationField = destinationClass.getDeclaredField(fieldName);
+                destinationField.setAccessible(true);
+
+                Object sourceValue = field.get(source);
+                if (isPrimitiveOrWrapper(field.getClass()) || String.class.equals(sourceValue.getClass())) {
+                    destinationField.set(destination, sourceValue);
+                }
+                else {
+                    Class<?> type = destinationField.getType();
+                    Object newDestination = type.newInstance();
+                    destinationField.set(destination, newDestination);
+                    recurrent(sourceValue, newDestination);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -51,7 +69,7 @@ public class Mapper<S, D> {
 
     }
 
-    private NameAndValue extractNameAndValue(Field c, S source) {
+    private NameAndValue extractNameAndValue(Field c, Object source) {
         c.setAccessible(true);
         try {
             return new NameAndValue(c.getName(), c.get(source));
