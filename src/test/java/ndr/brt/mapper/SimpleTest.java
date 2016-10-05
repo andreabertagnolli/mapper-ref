@@ -14,7 +14,7 @@ public class SimpleTest {
     }
 
     @Test
-    public void simple_map() throws Exception {
+    public void map_objects_with_same_fields() throws Exception {
         Source source = new Source();
         source.setField("value");
 
