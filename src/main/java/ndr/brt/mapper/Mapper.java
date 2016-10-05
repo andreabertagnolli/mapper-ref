@@ -57,46 +57,8 @@ public class Mapper<S, D> {
         }
     }
 
-    private NameAndValue applyConfiguration(NameAndValue nv) {
-        String sourceName = nv.getName();
-
-        if (configuration.containsKey(sourceName)) {
-            return new NameAndValue(configuration.get(sourceName), nv.getValue());
-        }
-        else {
-            return nv;
-        }
-
-    }
-
-    private NameAndValue extractNameAndValue(Field c, Object source) {
-        c.setAccessible(true);
-        try {
-            return new NameAndValue(c.getName(), c.get(source));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void configure(String source, String destination) {
         configuration.put(source, destination);
     }
 
-    private class NameAndValue {
-        private final String name;
-        private final Object value;
-
-        public NameAndValue(String name, Object value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Object getValue() {
-            return value;
-        }
-    }
 }
