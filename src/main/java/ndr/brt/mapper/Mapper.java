@@ -19,18 +19,17 @@ public class Mapper<S, D> {
     public D map(S source) {
         try {
             D destination = destinationClass.newInstance();
-            recurrent(source, destination);
+            recursiveMap(source, destination);
             return destination;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void recurrent(Object source, Object destination) {
+    private void recursiveMap(Object source, Object destination) {
         Field[] sourceFields = source.getClass().getDeclaredFields();
         Class<?> destinationClass = destination.getClass();
-        for (int i = 0; i < sourceFields.length; i++) {
-            Field field = sourceFields[i];
+        for (Field field : sourceFields) {
             field.setAccessible(true);
             String fieldName = field.getName();
             try {
@@ -44,12 +43,11 @@ public class Mapper<S, D> {
                 Object sourceValue = field.get(source);
                 if (isPrimitiveOrWrapper(field.getClass()) || String.class.equals(sourceValue.getClass())) {
                     destinationField.set(destination, sourceValue);
-                }
-                else {
+                } else {
                     Class<?> type = destinationField.getType();
                     Object newDestination = type.newInstance();
                     destinationField.set(destination, newDestination);
-                    recurrent(sourceValue, newDestination);
+                    recursiveMap(sourceValue, newDestination);
                 }
             } catch (Exception e) {
                 throw new RuntimeException(e);
