@@ -41,5 +41,16 @@ public class SimpleTest {
         assertEquals("value", destinationWithEnclosed.getEnclosed().getField());
     }
 
+    @Test
+    public void map_enclosed_to_enclosed_with_another_field_name() throws Exception {
+        SourceWithEnclosed sourceWithEnclosed = new SourceWithEnclosed(new Source("value"));
+        Mapper<SourceWithEnclosed, DestinationWithEnclosedWithOtherName> mapper = new Mapper<>(SourceWithEnclosed.class, DestinationWithEnclosedWithOtherName.class);
+        mapper.configure("enclosed", "other");
+
+        DestinationWithEnclosedWithOtherName destinationWithEnclosedWithOtherName = mapper.map(sourceWithEnclosed);
+
+        assertEquals("value", destinationWithEnclosedWithOtherName.getOther().getField());
+    }
+
     private class DestinationWithoutDefaultConstructor { }
 }
