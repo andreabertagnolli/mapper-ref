@@ -3,9 +3,9 @@ package ndr.brt.mapper;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class ConfigurationMapper<S, D> {
+public class ConfigurationMapper {
 
-    public void map(S source, D destination, Map<String, String> configuration) {
+    public void map(Object source, Object destination, Map<String, String> configuration) {
         configuration.entrySet().forEach(e -> {
             Object sourceValue = getValueAt(e.getKey(), source);
             if (sourceValue != null) {
