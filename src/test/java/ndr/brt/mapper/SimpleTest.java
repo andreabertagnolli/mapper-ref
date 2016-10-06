@@ -15,31 +15,25 @@ public class SimpleTest {
 
     @Test
     public void map_objects_with_same_fields() throws Exception {
-        Source source = new Source();
-        source.setField("value");
         Mapper<Source, Destination> mapper = new Mapper<>(Source.class, Destination.class);
-        Destination destination = mapper.map(source);
+        Destination destination = mapper.map(new Source("value"));
 
         assertEquals("value", destination.getField());
     }
 
     @Test
     public void map_with_different_field_name() throws Exception {
-        Source source = new Source();
-        source.setField("value");
         Mapper<Source, DestinationWithOtherField> mapper = new Mapper<>(Source.class, DestinationWithOtherField.class);
         mapper.configure("field", "other");
 
-        DestinationWithOtherField destination = mapper.map(source);
+        DestinationWithOtherField destination = mapper.map(new Source("value"));
 
         assertEquals("value", destination.getOther());
     }
 
     @Test
     public void map_enclosed_to_enclosed() throws Exception {
-        Source source = new Source();
-        source.setField("value");
-        SourceWithEnclosed sourceWithEnclosed = new SourceWithEnclosed(source);
+        SourceWithEnclosed sourceWithEnclosed = new SourceWithEnclosed(new Source("value"));
         Mapper<SourceWithEnclosed, DestinationWithEnclosed> mapper = new Mapper<>(SourceWithEnclosed.class, DestinationWithEnclosed.class);
 
         DestinationWithEnclosed destinationWithEnclosed = mapper.map(sourceWithEnclosed);
