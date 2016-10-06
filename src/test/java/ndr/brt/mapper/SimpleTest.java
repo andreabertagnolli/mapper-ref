@@ -45,7 +45,7 @@ public class SimpleTest {
     public void map_enclosed_to_enclosed_with_another_name() throws Exception {
         SourceWithEnclosed sourceWithEnclosed = new SourceWithEnclosed(new Source("value"));
         Mapper<SourceWithEnclosed, DestinationWithEnclosedWithOtherName> mapper = new Mapper<>(SourceWithEnclosed.class, DestinationWithEnclosedWithOtherName.class);
-        mapper.configure("enclosed", "other");
+        mapper.configure("enclosed.field", "other.field");
 
         DestinationWithEnclosedWithOtherName destinationWithEnclosedWithOtherName = mapper.map(sourceWithEnclosed);
 
@@ -56,11 +56,22 @@ public class SimpleTest {
     public void map_enclose_with_different_field_name() throws Exception {
         SourceWithEnclosed sourceWithEnclosed = new SourceWithEnclosed(new Source("value"));
         Mapper<SourceWithEnclosed, DestinationWithEnclosedWithOtherFieldName> mapper = new Mapper<>(SourceWithEnclosed.class, DestinationWithEnclosedWithOtherFieldName.class);
-        mapper.configure("field", "other");
+        mapper.configure("enclosed.field", "enclosed.other");
 
         DestinationWithEnclosedWithOtherFieldName destinationWithEnclosedWithOtherFieldName = mapper.map(sourceWithEnclosed);
 
         assertEquals("value", destinationWithEnclosedWithOtherFieldName.getEnclosed().getOther());
+    }
+
+    @Test
+    public void map_enclose_with_different_name_and_different_field_name() throws Exception {
+        SourceWithEnclosed sourceWithEnclosed = new SourceWithEnclosed(new Source("value"));
+        Mapper<SourceWithEnclosed, DestinationWithEnclosedDifferentNameDirrerentField> mapper = new Mapper<>(SourceWithEnclosed.class, DestinationWithEnclosedDifferentNameDirrerentField.class);
+        mapper.configure("enclosed.field", "other.other");
+
+        DestinationWithEnclosedDifferentNameDirrerentField destination = mapper.map(sourceWithEnclosed);
+
+        assertEquals("value", destination.getOther().getOther());
     }
 
     private class DestinationWithoutDefaultConstructor { }
