@@ -17,7 +17,7 @@ public class DefaultMapper {
                 destinationField.setAccessible(true);
 
                 Object sourceValue = field.get(source);
-                if (isSortOfPrimitive(field, sourceValue)) {
+                if (isPrimitiveOrString(field, sourceValue)) {
                     destinationField.set(destination, sourceValue);
                 } else {
                     Class<?> type = destinationField.getType();
@@ -32,7 +32,7 @@ public class DefaultMapper {
 
     }
 
-    private boolean isSortOfPrimitive(Field field, Object sourceValue) {
+    private boolean isPrimitiveOrString(Field field, Object sourceValue) {
         return isPrimitiveOrWrapper(field.getClass()) || String.class.equals(sourceValue.getClass());
     }
 }
