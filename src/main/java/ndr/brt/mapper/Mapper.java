@@ -4,14 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Mapper<S, D> {
-    private final Class<S> sourceClass;
     private final Class<D> destinationClass;
     private final ConfigurationMapper configurationMapper = new ConfigurationMapper();
     private final DefaultMapper defaultMapper = new DefaultMapper();
     private Map<String, String> configuration = new HashMap<>();
 
-    public Mapper(Class<S> sourceClass, Class<D> destinationClass) {
-        this.sourceClass = sourceClass;
+    public Mapper(Class<D> destinationClass) {
         this.destinationClass = destinationClass;
     }
 
